@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio | Your Name</title>
+    <meta
+      name="description"
+      content="Personal portfolio showcasing projects, skills, and contact details."
+    />
+    <script>
+      (() => {
+        try {
+          const key = "portfolio-theme";
+          const savedTheme = localStorage.getItem(key);
+          const systemPrefersDark =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const theme =
+            savedTheme === "light" || savedTheme === "dark"
+              ? savedTheme
+              : systemPrefersDark
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+          document.documentElement.style.colorScheme = theme;
+        } catch {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <div class="header-controls">
+          <nav aria-label="Primary navigation">
+            <ul class="nav-list">
+              <li><a href="#about">About</a></li>
+              <li><a href="#projects">Projects</a></li>
+              <li><a href="#skills">Skills</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </nav>
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            type="button"
+            aria-label="Switch to dark theme"
+            aria-pressed="false"
+          >
+            Dark mode
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="section hero" id="hero" aria-labelledby="hero-title">
+        <div class="container hero-layout reveal">
+          <div class="hero-grid">
+            <p class="eyebrow" id="hero-role"></p>
+            <h1 id="hero-title"></h1>
+            <p class="lead" id="hero-intro"></p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" id="hero-primary" href="#projects"></a>
+              <a class="btn btn-secondary" id="hero-secondary" href="#contact"></a>
+            </div>
+          </div>
+          <figure class="hero-media" id="hero-media">
+            <img id="hero-image" src="" alt="" loading="lazy" decoding="async" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="about" aria-labelledby="about-title">
+        <div class="container reveal">
+          <h2 id="about-title">About</h2>
+          <div class="prose" id="about-content"></div>
+        </div>
+      </section>
+
+      <section class="section" id="projects" aria-labelledby="projects-title">
+        <div class="container reveal">
+          <h2 id="projects-title">Projects</h2>
+          <div class="projects-grid" id="projects-grid"></div>
+        </div>
+      </section>
+
+      <section class="section" id="skills" aria-labelledby="skills-title">
+        <div class="container reveal">
+          <h2 id="skills-title">Skills</h2>
+          <div class="skills-grid" id="skills-grid"></div>
+        </div>
+      </section>
+
+      <section class="section" id="contact" aria-labelledby="contact-title">
+        <div class="container reveal">
+          <h2 id="contact-title">Contact</h2>
+          <p class="contact-intro" id="contact-text"></p>
+          <ul class="contact-list">
+            <li>
+              <a id="contact-email" href="mailto:your.email@example.com">Email</a>
+            </li>
+            <li>
+              <a id="contact-linkedin" href="https://linkedin.com">LinkedIn</a>
+            </li>
+            <li>
+              <a id="contact-github" href="https://github.com">GitHub</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          <span id="current-year"></span> - <span id="footer-name">Your Name</span>. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <noscript>
+      <p class="noscript-note">
+        This page needs JavaScript to load content from <code>assets/content.js</code>.
+      </p>
+    </noscript>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
