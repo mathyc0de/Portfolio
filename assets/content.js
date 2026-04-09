@@ -40,7 +40,7 @@ export const portfolioContent = {
       },
       stack: ["Flutter", "Mobile Development", "Firebase", "Internationalization", "State Management", "Rive"],
       link: {
-        label: "Find on Play Store",
+        label: "Coming Soon",
         href: "https://play.google.com/store/apps/details?id=com.mssoftware.translation_daybook",
         openInNewTab: true,
       },
