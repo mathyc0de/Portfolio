@@ -31,14 +31,23 @@ export const portfolioContent = {
   },
   projects: [
     {
-      name: "Translation Daybook",
+      name: "Granosi",
       summary:
-        "Translation Daybook is a Language Learning app. The whole idea of the project is to provide a seamless AI-powered grammar correction experience.",
+        "Granosi is a mobile language-learning app focused on real writing practice. Users journal about their day in a language they already speak, translate it into the language they are learning, and get instant AI feedback with a 0–10 score, corrections, and improvement tips. The app also includes target-language grammar mode, free chat with AI assistants, a practice daybook with history and stats, optional cloud backup, and a Granosi Plus subscription — all with a multilingual interface in 12 languages.",
       image: {
         src: "assets/images/widget.png",
         alt: "assets/images/project-placeholder.svg",
       },
-      stack: ["Flutter", "Mobile Development", "Firebase", "Internationalization", "State Management", "Rive"],
+      stack: [
+        "Flutter",
+        "Riverpod",
+        "Firebase",
+        "Python",
+        "Cloud Functions",
+        "SQLite",
+        "AI/LLM",
+        "Internationalization",
+      ],
       link: {
         label: "Find on Play Store",
         href: "https://play.google.com/store/apps/details?id=com.mssoftware.translation_daybook",
@@ -69,11 +78,11 @@ export const portfolioContent = {
     },
     {
       category: "Mobile Development",
-      items: ["Flutter", "Riverpod", "Firebase", "Rive", "Internationalization"],
+      items: ["Flutter", "Riverpod", "Firebase", "SQLite", "Internationalization"],
     },
     {
       category: "Backend",
-      items: ["Asp.Net Core", "Fast API", "REST APIs"],
+      items: ["Asp.Net Core", "FastAPI", "Python", "Cloud Functions", "REST APIs"],
     },
     {
       category: "Tooling",
