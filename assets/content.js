@@ -49,7 +49,7 @@ export const portfolioContent = {
         "Internationalization",
       ],
       link: {
-        label: "Coming Soon",
+        label: "Find On Play Store",
         href: "https://play.google.com/store/apps/details?id=com.mssoftware.translation_daybook",
         openInNewTab: true,
       },
