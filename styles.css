@@ -175,6 +175,35 @@ a {
   transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.language-switcher-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.language-switcher-button:hover,
+.language-switcher-button.is-active {
+  color: var(--accent-strong);
+  background: var(--nav-active-bg);
+}
+
 .theme-toggle:hover {
   transform: translateY(-1px);
   border-color: var(--btn-secondary-border);
@@ -313,6 +342,85 @@ h2 {
   color: var(--muted);
 }
 
+.experiences-grid {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.experience-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.experience-image-wrap {
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--image-frame-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--image-frame-bg);
+}
+
+.experience-image {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.image-preview-trigger {
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: zoom-in;
+}
+
+.image-preview-trigger img {
+  transition: transform 0.25s ease;
+}
+
+.image-preview-trigger:hover img {
+  transform: scale(1.02);
+}
+
+.experience-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.experience-card h3 {
+  font-size: 1.15rem;
+}
+
+.experience-period,
+.experience-company,
+.experience-summary {
+  color: var(--muted);
+}
+
+.experience-company {
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.experience-highlights {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.45rem;
+}
+
 .projects-grid {
   display: grid;
   gap: var(--space-4);
@@ -349,6 +457,56 @@ h2 {
   display: block;
   aspect-ratio: 16 / 9;
   object-fit: cover;
+}
+
+.image-dialog {
+  position: fixed;
+  width: fit-content;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
+  margin: auto;
+  padding: 3rem 1rem 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.image-dialog::backdrop {
+  background: rgba(4, 10, 20, 0.82);
+  backdrop-filter: blur(4px);
+}
+
+.image-dialog img {
+  display: block;
+  width: auto;
+  max-width: min(88vw, 1400px);
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.image-dialog-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.65rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-dialog-close:hover {
+  color: var(--accent-strong);
+  background: var(--nav-active-bg);
 }
 
 .stack-list {
@@ -479,6 +637,7 @@ h2 {
 }
 
 @media (min-width: 780px) {
+  .experiences-grid,
   .projects-grid,
   .skills-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

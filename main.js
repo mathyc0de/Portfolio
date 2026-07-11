@@ -1,6 +1,15 @@
-import { portfolioContent } from "./assets/content.js";
+import {
+  defaultLanguage,
+  getPortfolioContent,
+  supportedLanguages,
+} from "./assets/content.js";
 
 const THEME_STORAGE_KEY = "portfolio-theme";
+const LANGUAGE_STORAGE_KEY = "portfolio-language";
+
+let currentLanguage = defaultLanguage;
+let currentUi = {};
+let revealObserver = null;
 
 function byId(id) {
   return document.getElementById(id);
@@ -58,10 +67,10 @@ function updateThemeToggleText(theme) {
   }
 
   const isDark = theme === "dark";
-  toggle.textContent = isDark ? "Light mode" : "Dark mode";
+  toggle.textContent = isDark ? currentUi.themeLight : currentUi.themeDark;
   toggle.setAttribute(
     "aria-label",
-    isDark ? "Switch to light theme" : "Switch to dark theme"
+    isDark ? currentUi.themeLightAria : currentUi.themeDarkAria
   );
   toggle.setAttribute("aria-pressed", String(isDark));
 }
@@ -127,6 +136,7 @@ function setImage(imageId, containerId, config, fallbackAlt = "") {
 
   image.src = config.src;
   image.alt = config.alt || fallbackAlt;
+  applyImageFocus(image, config);
   if (container) {
     container.hidden = false;
   }
@@ -136,7 +146,216 @@ function hasText(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function renderHero(hero) {
+function clampPercent(value, fallback = 50) {
+  const number = Number(value);
+  if (Number.isNaN(number)) {
+    return fallback;
+  }
+
+  return Math.min(100, Math.max(0, number));
+}
+
+function applyImageFocus(image, config) {
+  if (!image || !config) {
+    return;
+  }
+
+  if (hasText(config.objectPosition)) {
+    image.style.objectPosition = config.objectPosition.trim();
+    return;
+  }
+
+  if (config.focus && typeof config.focus === "object") {
+    const x = clampPercent(config.focus.x);
+    const y = clampPercent(config.focus.y);
+    image.style.objectPosition = `${x}% ${y}%`;
+    return;
+  }
+
+  if (hasText(config.focus)) {
+    image.style.objectPosition = config.focus.trim();
+    return;
+  }
+
+  image.style.removeProperty("object-position");
+}
+
+function normalizeImageConfig(image) {
+  if (!image) {
+    return null;
+  }
+
+  if (typeof image === "string" && hasText(image)) {
+    return { src: image.trim() };
+  }
+
+  if (typeof image === "object" && hasText(image.src)) {
+    return image;
+  }
+
+  return null;
+}
+
+function createPreviewImageTrigger(config, { fallbackAlt, wrapClass, imageClass }) {
+  const imageConfig = normalizeImageConfig(config);
+  if (!imageConfig) {
+    return null;
+  }
+
+  const alt = imageConfig.alt || fallbackAlt;
+  const imageWrap = document.createElement("button");
+  imageWrap.className = `${wrapClass} image-preview-trigger`;
+  imageWrap.type = "button";
+
+  const image = document.createElement("img");
+  image.className = imageClass;
+  image.src = imageConfig.src;
+  image.alt = alt;
+  image.loading = "lazy";
+  image.decoding = "async";
+  applyImageFocus(image, imageConfig);
+
+  imageWrap.setAttribute("aria-label", `${currentUi.openImage}: ${alt}`);
+  imageWrap.addEventListener("click", () => openImageDialog(image.src, alt));
+  imageWrap.appendChild(image);
+
+  return imageWrap;
+}
+
+function openImageDialog(src, alt) {
+  const dialog = byId("image-dialog");
+  const image = byId("image-dialog-image");
+  if (!dialog || !image) {
+    return;
+  }
+
+  image.src = src;
+  image.alt = alt;
+  dialog.showModal();
+}
+
+function setupImageDialog() {
+  const dialog = byId("image-dialog");
+  const closeButton = byId("image-dialog-close");
+  const image = byId("image-dialog-image");
+  if (!dialog || !closeButton || !image) {
+    return;
+  }
+
+  closeButton.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) {
+      dialog.close();
+    }
+  });
+  dialog.addEventListener("close", () => {
+    image.removeAttribute("src");
+    image.alt = "";
+  });
+}
+
+function getStoredLanguage() {
+  try {
+    const value = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return supportedLanguages.some(({ code }) => code === value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function getBrowserLanguage() {
+  const browserLanguage = navigator.language?.slice(0, 2).toLowerCase();
+  return supportedLanguages.some(({ code }) => code === browserLanguage)
+    ? browserLanguage
+    : defaultLanguage;
+}
+
+function renderUi(ui, meta, hero) {
+  currentUi = ui;
+  document.documentElement.lang = currentLanguage;
+
+  setText("skip-link", ui.skipLink);
+  setText("nav-about", ui.navAbout);
+  setText("nav-experiences", ui.navExperiences);
+  setText("nav-projects", ui.navProjects);
+  setText("nav-skills", ui.navSkills);
+  setText("nav-contact", ui.navContact);
+  setText("about-title", ui.sectionAbout);
+  setText("experiences-title", ui.sectionExperiences);
+  setText("projects-title", ui.sectionProjects);
+  setText("skills-title", ui.sectionSkills);
+  setText("contact-title", ui.sectionContact);
+  setText("footer-rights", ui.footerRights);
+  setText("noscript-note", ui.noscript);
+
+  const dialog = byId("image-dialog");
+  const closeButton = byId("image-dialog-close");
+  if (dialog) {
+    dialog.setAttribute("aria-label", ui.imageDialogLabel);
+  }
+  if (closeButton) {
+    closeButton.setAttribute("aria-label", ui.imageDialogClose);
+  }
+
+  const metaDescription = document.querySelector('meta[name="description"]');
+  if (metaDescription) {
+    metaDescription.setAttribute("content", meta.description);
+  }
+
+  document.title = `${meta.title} | ${hero.name}`;
+
+  const currentTheme =
+    document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  updateThemeToggleText(currentTheme);
+  updateLanguageSwitcher();
+}
+
+function updateLanguageSwitcher() {
+  const switcher = byId("language-switcher");
+  if (!switcher) {
+    return;
+  }
+
+  switcher.setAttribute("aria-label", currentUi.languageLabel);
+  switcher.innerHTML = "";
+
+  supportedLanguages.forEach(({ code, label, name }) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "language-switcher-button";
+    button.dataset.lang = code;
+    button.textContent = label;
+    button.setAttribute("aria-label", name);
+    button.setAttribute("aria-pressed", String(code === currentLanguage));
+
+    if (code === currentLanguage) {
+      button.classList.add("is-active");
+    }
+
+    button.addEventListener("click", () => setLanguage(code));
+    switcher.appendChild(button);
+  });
+}
+
+function setLanguage(language) {
+  if (language === currentLanguage) {
+    return;
+  }
+
+  currentLanguage = language;
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  } catch {}
+
+  renderPortfolio(getPortfolioContent(language));
+}
+
+function setupLanguageSwitcher() {
+  currentLanguage = getStoredLanguage() || getBrowserLanguage();
+  renderPortfolio(getPortfolioContent(currentLanguage));
+}
+
+function renderHero(hero, meta) {
   setText("brand-name", hero.name);
   setText("footer-name", hero.name);
   setText("hero-role", hero.role);
@@ -145,7 +364,7 @@ function renderHero(hero) {
   setLink("hero-primary", hero.primaryAction);
   setLink("hero-secondary", hero.secondaryAction);
   setImage("hero-image", "hero-media", hero.image, `${hero.name} profile image`);
-  document.title = `Portfolio | ${hero.name}`;
+  document.title = `${meta.title} | ${hero.name}`;
 }
 
 function renderAbout(about) {
@@ -162,6 +381,94 @@ function renderAbout(about) {
   });
 }
 
+function renderExperiences(experiences) {
+  const grid = byId("experiences-grid");
+  if (!grid) {
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  experiences.forEach((experience) => {
+    if (!experience) {
+      return;
+    }
+
+    const card = document.createElement("article");
+    card.className = "experience-card reveal";
+
+    const imageConfig = normalizeImageConfig(experience.image);
+    if (imageConfig) {
+      const imageWrap = createPreviewImageTrigger(imageConfig, {
+        fallbackAlt: `${experience.company || experience.role} preview`,
+        wrapClass: "experience-image-wrap",
+        imageClass: "experience-image",
+      });
+
+      if (imageWrap) {
+        card.appendChild(imageWrap);
+      }
+    }
+
+    const header = document.createElement("div");
+    header.className = "experience-header";
+
+    if (hasText(experience.role)) {
+      const title = document.createElement("h3");
+      title.textContent = experience.role;
+      header.appendChild(title);
+    }
+
+    if (hasText(experience.period)) {
+      const period = document.createElement("p");
+      period.className = "experience-period";
+      period.textContent = experience.period;
+      header.appendChild(period);
+    }
+
+    if (header.childElementCount > 0) {
+      card.appendChild(header);
+    }
+
+    if (hasText(experience.company)) {
+      const company = document.createElement("p");
+      company.className = "experience-company";
+      company.textContent = experience.company;
+      card.appendChild(company);
+    }
+
+    if (hasText(experience.summary)) {
+      const summary = document.createElement("p");
+      summary.className = "experience-summary";
+      summary.textContent = experience.summary;
+      card.appendChild(summary);
+    }
+
+    if (Array.isArray(experience.highlights) && experience.highlights.length > 0) {
+      const highlights = document.createElement("ul");
+      highlights.className = "experience-highlights";
+
+      experience.highlights.forEach((item) => {
+        if (!hasText(item)) {
+          return;
+        }
+
+        const point = document.createElement("li");
+        point.textContent = item;
+        highlights.appendChild(point);
+      });
+
+      if (highlights.childElementCount > 0) {
+        card.appendChild(highlights);
+      }
+    }
+
+    if (card.childElementCount > 0) {
+      grid.appendChild(card);
+    }
+  });
+}
+
 function renderProjects(projects) {
   const grid = byId("projects-grid");
   if (!grid) {
@@ -175,18 +482,15 @@ function renderProjects(projects) {
     card.className = "project-card reveal";
 
     if (project.image && project.image.src) {
-      const imageWrap = document.createElement("div");
-      imageWrap.className = "project-image-wrap";
+      const imageWrap = createPreviewImageTrigger(project.image, {
+        fallbackAlt: `${project.name} preview`,
+        wrapClass: "project-image-wrap",
+        imageClass: "project-image",
+      });
 
-      const image = document.createElement("img");
-      image.className = "project-image";
-      image.src = project.image.src;
-      image.alt = project.image.alt || `${project.name} preview`;
-      image.loading = "lazy";
-      image.decoding = "async";
-
-      imageWrap.appendChild(image);
-      card.appendChild(imageWrap);
+      if (imageWrap) {
+        card.appendChild(imageWrap);
+      }
     }
 
     if (hasText(project.name)) {
@@ -289,6 +593,10 @@ function renderContact(contact) {
 }
 
 function setupRevealAnimations() {
+  if (revealObserver) {
+    revealObserver.disconnect();
+  }
+
   const items = Array.from(document.querySelectorAll(".reveal"));
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -297,19 +605,19 @@ function setupRevealAnimations() {
     return;
   }
 
-  const observer = new IntersectionObserver(
+  revealObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+          revealObserver.unobserve(entry.target);
         }
       });
     },
     { threshold: 0.2 }
   );
 
-  items.forEach((item) => observer.observe(item));
+  items.forEach((item) => revealObserver.observe(item));
 }
 
 function setupCurrentSectionHighlight() {
@@ -347,15 +655,22 @@ function setupCurrentSectionHighlight() {
   sections.forEach((section) => observer.observe(section));
 }
 
-function bootstrapPortfolio() {
-  setupThemeToggle();
-  renderHero(portfolioContent.hero);
-  renderAbout(portfolioContent.about);
-  renderProjects(portfolioContent.projects);
-  renderSkills(portfolioContent.skills);
-  renderContact(portfolioContent.contact);
+function renderPortfolio(content) {
+  renderUi(content.ui, content.meta, content.hero);
+  renderHero(content.hero, content.meta);
+  renderAbout(content.about);
+  renderExperiences(content.experiences);
+  renderProjects(content.projects);
+  renderSkills(content.skills);
+  renderContact(content.contact);
   setText("current-year", String(new Date().getFullYear()));
   setupRevealAnimations();
+}
+
+function bootstrapPortfolio() {
+  setupThemeToggle();
+  setupImageDialog();
+  setupLanguageSwitcher();
   setupCurrentSectionHighlight();
 }
 

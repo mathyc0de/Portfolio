@@ -36,19 +36,26 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content" id="skip-link">Skip to main content</a>
 
     <header class="site-header" id="top">
       <div class="container header-inner">
         <div class="header-controls">
           <nav aria-label="Primary navigation">
             <ul class="nav-list">
-              <li><a href="#about">About</a></li>
-              <li><a href="#projects">Projects</a></li>
-              <li><a href="#skills">Skills</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="#about" id="nav-about">About</a></li>
+              <li><a href="#experiences" id="nav-experiences">Experiences</a></li>
+              <li><a href="#projects" id="nav-projects">Projects</a></li>
+              <li><a href="#skills" id="nav-skills">Skills</a></li>
+              <li><a href="#contact" id="nav-contact">Contact</a></li>
             </ul>
           </nav>
+          <div
+            class="language-switcher"
+            id="language-switcher"
+            role="group"
+            aria-label="Language"
+          ></div>
           <button
             class="theme-toggle"
             id="theme-toggle"
@@ -84,6 +91,17 @@
         <div class="container reveal">
           <h2 id="about-title">About</h2>
           <div class="prose" id="about-content"></div>
+        </div>
+      </section>
+
+      <section
+        class="section"
+        id="experiences"
+        aria-labelledby="experiences-title"
+      >
+        <div class="container reveal">
+          <h2 id="experiences-title">Experiences</h2>
+          <div class="experiences-grid" id="experiences-grid"></div>
         </div>
       </section>
 
@@ -123,13 +141,26 @@
     <footer class="site-footer">
       <div class="container">
         <p>
-          <span id="current-year"></span> - <span id="footer-name">Your Name</span>. All rights reserved.
+          <span id="current-year"></span> - <span id="footer-name">Your Name</span>.
+          <span id="footer-rights">All rights reserved.</span>
         </p>
       </div>
     </footer>
 
+    <dialog class="image-dialog" id="image-dialog" aria-label="Image preview">
+      <button
+        class="image-dialog-close"
+        id="image-dialog-close"
+        type="button"
+        aria-label="Close image preview"
+      >
+        &times;
+      </button>
+      <img id="image-dialog-image" src="" alt="" />
+    </dialog>
+
     <noscript>
-      <p class="noscript-note">
+      <p class="noscript-note" id="noscript-note">
         This page needs JavaScript to load content from <code>assets/content.js</code>.
       </p>
     </noscript>
