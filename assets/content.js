@@ -240,6 +240,7 @@ const portfolioContent = {
         "TensorFlow",
         l("Computer Vision", "Visão Computacional"),
         "Deep Learning",
+        "Classic ML Algorithms",
       ],
     },
     {
@@ -267,7 +268,7 @@ const portfolioContent = {
       category: l("Languages", "Idiomas"),
       items: [
         l("Portuguese (Native)", "Português (Nativo)"),
-        l("English (Intermediate — course in progress)", "Inglês (Intermediário — curso em andamento)"),
+        l("English (advanced — course in progress)", "Inglês (avançado — curso em andamento)"),
       ],
     },
   ],
