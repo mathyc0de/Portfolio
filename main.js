@@ -587,9 +587,9 @@ function renderSkills(skillGroups) {
 
 function renderContact(contact) {
   setText("contact-text", contact.intro);
-  setLink("contact-email", contact.email);
   setLink("contact-linkedin", contact.linkedin);
   setLink("contact-github", contact.github);
+  setLink("contact-kaggle", contact.kaggle);
 }
 
 function setupRevealAnimations() {
