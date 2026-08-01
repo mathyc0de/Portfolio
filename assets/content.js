@@ -276,11 +276,6 @@ const portfolioContent = {
       "I am currently open to new opportunities and collaboration. Feel free to reach out through any of the channels below.",
       "Estou aberto a novas oportunidades e colaborações. Entre em contato por qualquer um dos canais abaixo."
     ),
-    email: {
-      label: "matheuspsilveira0@gmail.com",
-      href: "mailto:matheuspsilveira0@gmail.com",
-      openInNewTab: false,
-    },
     linkedin: {
       label: "linkedin.com/in/matheuspsilveira",
       href: "https://linkedin.com/in/matheuspsilveira/",
@@ -291,5 +286,10 @@ const portfolioContent = {
       href: "https://github.com/mathyc0de",
       openInNewTab: true,
     },
+    kaggle: {
+      label: "kaggle.com/matheuspsilveira",
+      href: "https://www.kaggle.com/matheuspsilveira",
+      openInNewTab: true,
+    }
   },
 };
